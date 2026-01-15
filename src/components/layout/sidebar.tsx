@@ -71,10 +71,12 @@ export function Sidebar({ collapsed }: SidebarProps) {
   const handleMenuClick = (item: MenuItem) => {
     if (item.children) {
       if (!collapsed) {
-        setOpenMenus((prev) => ({
-          ...prev,
-          [item.label]: !prev[item.label],
-        }));
+        setOpenMenus((prev) => {
+          return {
+            ...prev,
+            [item.label]: !prev[item.label],
+          };
+        });
       }
     } else if (item.path) {
       router.push(item.path);
@@ -160,114 +162,106 @@ export function Sidebar({ collapsed }: SidebarProps) {
 
       <Box component="nav" aria-label="Primary navigation" sx={{ flex: 1 }}>
         <List component="ul" sx={{ pt: 1 }}>
-          {menuItems.map((item) => (
-            <li key={item.label} style={{ listStyle: "none" }}>
-              <Tooltip title={collapsed ? item.label : ""} placement="right">
-                <ListItemButton
-                  onClick={() => handleMenuClick(item)}
-                  selected={
-                    item.path
-                      ? isActive(item.path)
-                      : isChildActive(item.children)
-                  }
-                  sx={{
-                    py: 1.25,
-                    px: collapsed ? 2.5 : 2,
-                    justifyContent: collapsed ? "center" : "flex-start",
-                    "&.Mui-selected": {
-                      bgcolor: "primary.light",
-                      "&:hover": {
-                        bgcolor: "primary.light",
-                      },
-                    },
-                    "&:hover": {
-                      bgcolor: "grey.100",
-                    },
-                  }}
-                >
-                  <ListItemIcon
+          {menuItems.map((item) => {
+            return (
+              <li key={item.label} style={{ listStyle: "none" }}>
+                <Tooltip title={collapsed ? item.label : ""} placement="right">
+                  <ListItemButton
+                    onClick={() => {
+                      handleMenuClick(item);
+                    }}
+                    selected={
+                      item.path
+                        ? isActive(item.path)
+                        : isChildActive(item.children)
+                    }
                     sx={{
-                      minWidth: collapsed ? 0 : 32,
-                      color: (
-                        item.path
-                          ? isActive(item.path)
-                          : isChildActive(item.children)
-                      )
-                        ? "primary.dark"
-                        : "grey.600",
-                      justifyContent: "center",
+                      py: 1.25,
+                      px: collapsed ? 2.5 : 2,
+                      justifyContent: collapsed ? "center" : "flex-start",
                     }}
                   >
-                    {item.icon}
-                  </ListItemIcon>
-                  {!collapsed && (
-                    <>
-                      <ListItemText
-                        primary={item.label}
-                        slotProps={{
-                          primary: {
-                            fontSize: 13,
-                            fontWeight:
-                              isActive(item.path || "") ||
-                              isChildActive(item.children)
-                                ? 500
-                                : 400,
-                          },
-                        }}
-                      />
-                      {item.children &&
-                        (openMenus[item.label] ? (
-                          <ExpandLess fontSize="small" />
-                        ) : (
-                          <ExpandMore fontSize="small" />
-                        ))}
-                    </>
-                  )}
-                </ListItemButton>
-              </Tooltip>
-              {item.children && !collapsed && (
-                <Collapse
-                  in={openMenus[item.label]}
-                  timeout="auto"
-                  unmountOnExit
-                >
-                  <List component="ul" disablePadding sx={{ pl: 0 }}>
-                    {item.children.map((child) => (
-                      <li key={child.path} style={{ listStyle: "none" }}>
-                        <ListItemButton
-                          onClick={() => handleChildClick(child.path)}
-                          selected={isActive(child.path)}
-                          sx={{
-                            pl: 6,
-                            py: 0.75,
-                            "&.Mui-selected": {
-                              bgcolor: "primary.light",
-                              "&:hover": {
-                                bgcolor: "primary.light",
-                              },
-                            },
-                            "&:hover": {
-                              bgcolor: "grey.100",
+                    <ListItemIcon
+                      sx={{
+                        minWidth: collapsed ? 0 : 32,
+                        color: (
+                          item.path
+                            ? isActive(item.path)
+                            : isChildActive(item.children)
+                        )
+                          ? "primary.dark"
+                          : "grey.600",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                    {!collapsed && (
+                      <>
+                        <ListItemText
+                          primary={item.label}
+                          slotProps={{
+                            primary: {
+                              fontSize: 13,
+                              fontWeight:
+                                isActive(item.path || "") ||
+                                isChildActive(item.children)
+                                  ? 500
+                                  : 400,
                             },
                           }}
-                        >
-                          <ListItemText
-                            primary={child.label}
-                            slotProps={{
-                              primary: {
-                                fontSize: 12,
-                                fontWeight: isActive(child.path) ? 500 : 400,
-                              },
-                            }}
-                          />
-                        </ListItemButton>
-                      </li>
-                    ))}
-                  </List>
-                </Collapse>
-              )}
-            </li>
-          ))}
+                        />
+                        {item.children &&
+                          (openMenus[item.label] ? (
+                            <ExpandLess fontSize="small" />
+                          ) : (
+                            <ExpandMore fontSize="small" />
+                          ))}
+                      </>
+                    )}
+                  </ListItemButton>
+                </Tooltip>
+                {item.children && !collapsed && (
+                  <Collapse
+                    in={openMenus[item.label]}
+                    timeout="auto"
+                    unmountOnExit
+                  >
+                    <List component="ul" disablePadding sx={{ pl: 0 }}>
+                      {item.children.map((child) => {
+                        return (
+                          <li key={child.path} style={{ listStyle: "none" }}>
+                            <ListItemButton
+                              onClick={() => {
+                                handleChildClick(child.path);
+                              }}
+                              selected={isActive(child.path)}
+                              sx={{
+                                pl: 6,
+                                py: 0.75,
+                              }}
+                            >
+                              <ListItemText
+                                primary={child.label}
+                                slotProps={{
+                                  primary: {
+                                    fontSize: 12,
+                                    fontWeight: isActive(child.path)
+                                      ? 500
+                                      : 400,
+                                  },
+                                }}
+                              />
+                            </ListItemButton>
+                          </li>
+                        );
+                      })}
+                    </List>
+                  </Collapse>
+                )}
+              </li>
+            );
+          })}
         </List>
       </Box>
     </Drawer>
