@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { AuthProvider } from "@/contexts/auth-context";
 import { TranstackProvider } from "@/providers/transtack-provider";
 import { MuiThemeProvider } from "@/providers/mui-theme-provider";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,9 +31,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <TranstackProvider>
-          <MuiThemeProvider>
-            <AuthProvider>{children}</AuthProvider>
-          </MuiThemeProvider>
+          <AppRouterCacheProvider>
+            <MuiThemeProvider>
+              <AuthProvider>{children}</AuthProvider>
+            </MuiThemeProvider>
+          </AppRouterCacheProvider>
         </TranstackProvider>
       </body>
     </html>

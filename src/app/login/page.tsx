@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { useLogin } from "@/services/use-highway-service";
 import { useAuth } from "@/contexts/auth-context";
+import { Redirect } from "@/components/utils/redirect";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -66,7 +67,7 @@ export default function LoginPage() {
   }
 
   if (token) {
-    return router.replace("/");
+    return <Redirect to="/" />;
   }
 
   return (
