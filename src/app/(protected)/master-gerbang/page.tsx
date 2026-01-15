@@ -1,58 +1,47 @@
 "use client";
 
-import { useState } from "react";
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  TextField,
-  Typography,
-  InputAdornment,
-} from "@mui/material";
-import {
-  Add as AddIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Search as SearchIcon,
-} from "@mui/icons-material";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { useState, useMemo } from "react";
+import { Box, Card, CardContent, Typography } from "@mui/material";
 import {
   useGetGerbangs,
   useCreateGerbang,
   useUpdateGerbang,
   useDeleteGerbang,
 } from "@/services/use-highway-service";
+import { useQueryParams } from "@/hooks/use-query-params";
+import { useTableSort, type SortDirection } from "@/hooks/use-table-sort";
+import { SearchBar } from "@/features/master-gerbang/components/search-bar";
+import { GerbangTable } from "@/features/master-gerbang/components/gerbang-table";
+import { GerbangFormDialog } from "@/features/master-gerbang/components/gerbang-form-dialog";
+import { DeleteConfirmDialog } from "@/features/master-gerbang/components/delete-confirm-dialog";
 import type { Gerbang } from "@/services/highway-service.types";
-
-const gerbangSchema = z.object({
-  id: z.number().min(1, "ID is required"),
-  IdCabang: z.number().min(1, "ID Cabang is required"),
-  NamaGerbang: z.string().min(1, "Nama Gerbang is required"),
-  NamaCabang: z.string().min(1, "Nama Cabang is required"),
-});
-
-type GerbangFormValues = z.infer<typeof gerbangSchema>;
+import type { GerbangFormValues } from "@/features/master-gerbang/schemas";
 
 export default function MasterGerbangPage() {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [searchQuery, setSearchQuery] = useState("");
+  const { getQueryParam, setQueryParams } = useQueryParams();
+
+  const page = Number(getQueryParam("page")) || 0;
+  const rowsPerPage = Number(getQueryParam("limit")) || 10;
+  const searchQuery = getQueryParam("search") || "";
+  const sortBy = (getQueryParam("sort_by") as keyof Gerbang | null) || null;
+  const sortDirection = (getQueryParam("sort_dir") as SortDirection) || null;
+
+  const handleSortChange = (
+    key: keyof Gerbang | null,
+    direction: SortDirection,
+  ) => {
+    setQueryParams({
+      sort_by: key as string | null,
+      sort_dir: direction,
+    });
+  };
+
+  const { sortConfig, handleSort, sortedData } = useTableSort<Gerbang>({
+    sortBy,
+    sortDirection,
+    onSortChange: handleSortChange,
+  });
+
   const [openDialog, setOpenDialog] = useState(false);
   const [editingGerbang, setEditingGerbang] = useState<Gerbang | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -62,55 +51,40 @@ export default function MasterGerbangPage() {
     page: page + 1,
     limit: rowsPerPage,
     NamaGerbang: searchQuery || undefined,
+    NamaCabang: searchQuery || undefined,
   });
 
   const createMutation = useCreateGerbang();
   const updateMutation = useUpdateGerbang();
   const deleteMutation = useDeleteGerbang();
 
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<GerbangFormValues>({
-    resolver: zodResolver(gerbangSchema),
-    defaultValues: {
-      id: 0,
-      IdCabang: 0,
-      NamaGerbang: "",
-      NamaCabang: "",
-    },
-  });
-
   const handleChangePage = (_event: unknown, newPage: number) => {
-    setPage(newPage);
+    setQueryParams({
+      page: newPage,
+    });
   };
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    setQueryParams({
+      limit: parseInt(event.target.value, 10),
+      page: 0,
+    });
+  };
+
+  const handleSearchChange = (value: string) => {
+    setQueryParams({
+      search: value,
+      page: 0,
+    });
   };
 
   const handleOpenDialog = (gerbang?: Gerbang) => {
     if (gerbang) {
       setEditingGerbang(gerbang);
-      reset({
-        id: gerbang.id,
-        IdCabang: gerbang.IdCabang,
-        NamaGerbang: gerbang.NamaGerbang,
-        NamaCabang: gerbang.NamaCabang,
-      });
     } else {
       setEditingGerbang(null);
-      reset({
-        id: 0,
-        IdCabang: 0,
-        NamaGerbang: "",
-        NamaCabang: "",
-      });
     }
     setOpenDialog(true);
   };
@@ -118,7 +92,6 @@ export default function MasterGerbangPage() {
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setEditingGerbang(null);
-    reset();
   };
 
   const handleOpenDeleteConfirm = (gerbang: Gerbang) => {
@@ -131,7 +104,7 @@ export default function MasterGerbangPage() {
     setGerbangToDelete(null);
   };
 
-  const onSubmit = async (data: GerbangFormValues) => {
+  const handleSubmit = async (data: GerbangFormValues) => {
     try {
       if (editingGerbang) {
         await updateMutation.mutateAsync(data);
@@ -158,8 +131,10 @@ export default function MasterGerbangPage() {
     }
   };
 
-  const rows = gerbangsData?.data?.rows?.rows || [];
-  const totalCount = gerbangsData?.data?.count || 0;
+  const sortedRows = useMemo(() => {
+    const rows = gerbangsData?.data?.rows?.rows || [];
+    return sortedData(rows);
+  }, [gerbangsData?.data?.rows?.rows, sortedData]);
 
   return (
     <Box>
@@ -169,220 +144,46 @@ export default function MasterGerbangPage() {
 
       <Card>
         <CardContent>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mb: 3,
+          <SearchBar
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+            onAddClick={() => {
+              handleOpenDialog();
             }}
-          >
-            <TextField
-              placeholder="Search"
-              size="small"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon color="action" />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-              sx={{ minWidth: 250 }}
-            />
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => handleOpenDialog()}
-            >
-              Add Gerbang
-            </Button>
-          </Box>
+          />
 
-          <TableContainer component={Paper} variant="outlined">
-            <Table>
-              <TableHead>
-                <TableRow sx={{ bgcolor: "grey.50" }}>
-                  <TableCell>ID</TableCell>
-                  <TableCell>ID Cabang</TableCell>
-                  <TableCell>Nama Gerbang</TableCell>
-                  <TableCell>Nama Cabang</TableCell>
-                  <TableCell align="center">Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {isLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
-                      Loading...
-                    </TableCell>
-                  </TableRow>
-                ) : rows.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
-                      No data available
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  rows.map((gerbang) => (
-                    <TableRow key={`${gerbang.id}-${gerbang.IdCabang}`} hover>
-                      <TableCell>{gerbang.id}</TableCell>
-                      <TableCell>{gerbang.IdCabang}</TableCell>
-                      <TableCell>{gerbang.NamaGerbang}</TableCell>
-                      <TableCell>{gerbang.NamaCabang}</TableCell>
-                      <TableCell align="center">
-                        <IconButton
-                          size="small"
-                          onClick={() => handleOpenDialog(gerbang)}
-                          color="primary"
-                        >
-                          <EditIcon fontSize="small" />
-                        </IconButton>
-                        <IconButton
-                          size="small"
-                          onClick={() => handleOpenDeleteConfirm(gerbang)}
-                          color="error"
-                        >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-
-          <TablePagination
-            component="div"
-            count={totalCount}
+          <GerbangTable
+            rows={sortedRows}
+            isLoading={isLoading}
             page={page}
-            onPageChange={handleChangePage}
             rowsPerPage={rowsPerPage}
+            totalCount={gerbangsData?.data?.count || 0}
+            sortBy={sortConfig.key}
+            sortDirection={sortConfig.direction}
+            onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
-            rowsPerPageOptions={[5, 10, 25, 50]}
+            onSort={handleSort}
+            onEdit={handleOpenDialog}
+            onDelete={handleOpenDeleteConfirm}
           />
         </CardContent>
       </Card>
 
-      <Dialog
+      <GerbangFormDialog
         open={openDialog}
+        editingGerbang={editingGerbang}
+        isSubmitting={createMutation.isPending || updateMutation.isPending}
         onClose={handleCloseDialog}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>
-          {editingGerbang ? "Edit Gerbang" : "Add New Gerbang"}
-        </DialogTitle>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogContent>
-            <Box
-              sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}
-            >
-              <Controller
-                name="id"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="ID"
-                    type="number"
-                    fullWidth
-                    error={!!errors.id}
-                    helperText={errors.id?.message}
-                    disabled={!!editingGerbang}
-                    onChange={(e) =>
-                      field.onChange(parseInt(e.target.value) || 0)
-                    }
-                  />
-                )}
-              />
-              <Controller
-                name="IdCabang"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="ID Cabang"
-                    type="number"
-                    fullWidth
-                    error={!!errors.IdCabang}
-                    helperText={errors.IdCabang?.message}
-                    disabled={!!editingGerbang}
-                    onChange={(e) =>
-                      field.onChange(parseInt(e.target.value) || 0)
-                    }
-                  />
-                )}
-              />
-              <Controller
-                name="NamaGerbang"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Nama Gerbang"
-                    fullWidth
-                    error={!!errors.NamaGerbang}
-                    helperText={errors.NamaGerbang?.message}
-                  />
-                )}
-              />
-              <Controller
-                name="NamaCabang"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Nama Cabang"
-                    fullWidth
-                    error={!!errors.NamaCabang}
-                    helperText={errors.NamaCabang?.message}
-                  />
-                )}
-              />
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDialog}>Cancel</Button>
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={createMutation.isPending || updateMutation.isPending}
-              sx={{
-                bgcolor: "#5a6a85",
-                "&:hover": { bgcolor: "#4a5a75" },
-              }}
-            >
-              {editingGerbang ? "Update" : "Create"}
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
+        onSubmit={handleSubmit}
+      />
 
-      <Dialog open={deleteConfirmOpen} onClose={handleCloseDeleteConfirm}>
-        <DialogTitle>Confirm Delete</DialogTitle>
-        <DialogContent>
-          <Typography>
-            Are you sure you want to delete gerbang &quot;
-            {gerbangToDelete?.NamaGerbang}&quot;?
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDeleteConfirm}>Cancel</Button>
-          <Button
-            onClick={handleDelete}
-            color="error"
-            variant="contained"
-            disabled={deleteMutation.isPending}
-          >
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <DeleteConfirmDialog
+        open={deleteConfirmOpen}
+        gerbang={gerbangToDelete}
+        isDeleting={deleteMutation.isPending}
+        onClose={handleCloseDeleteConfirm}
+        onConfirm={handleDelete}
+      />
     </Box>
   );
 }
