@@ -15,27 +15,19 @@ import { SortableHeader } from "@/components/ui/sort-icon";
 import type { SortDirection } from "@/hooks/use-table-sort";
 import type { LalinRow } from "../types";
 
+type RuasGolongan = {
+  golI: number;
+  golII: number;
+  golIII: number;
+  golIV: number;
+  golV: number;
+  totalLalin: number;
+};
+
 type LalinDataTableProps = {
   rows: LalinRow[];
-  summaryByRuas: Record<
-    string,
-    {
-      golI: number;
-      golII: number;
-      golIII: number;
-      golIV: number;
-      golV: number;
-      totalLalin: number;
-    }
-  >;
-  grandTotal: {
-    golI: number;
-    golII: number;
-    golIII: number;
-    golIV: number;
-    golV: number;
-    totalLalin: number;
-  };
+  summaryByRuas: Record<string, RuasGolongan>;
+  grandTotal: RuasGolongan;
   page: number;
   rowsPerPage: number;
   totalCount: number;
