@@ -1,5 +1,7 @@
 # Highway Front End
 
+- https://highway.fahrezy.work
+
 ### Prerequisites
 
 - Node.js 24 or higher
