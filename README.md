@@ -1,6 +1,6 @@
 # Highway Front End
 
-- https://highway.fahrezy.work
+- [highway.fahrezy.work](https://highway.fahrezy.work)
 
 ### Prerequisites
 
@@ -56,4 +56,29 @@ docker -t <container name:tag> build .
 
 ```bash
 docker compose up --build
+```
+
+### Project Structure
+
+```
+project-root/
+└── src/
+    ├── app                             # Next.js default directory for routing
+    ├── components/                     # Shareable global component accross the project
+    │   └── <group>/                    # The group of component intended for
+    │       └──  <component-name>.tsx
+    ├── contexts/                       # Global React's custom hook accross the project
+    │   └── <context-name>.ts
+    ├── features/                       # Feature / domain specific code (components, hooks, contexts, utils, etc)
+    │   └── <feature-name>/
+    │        ├── <components>/
+    │        ├── <hooks>/
+    │        └── <other-code>.ts/tsx
+    ├── hooks/                          # Shareable global React's custom hook accross the project
+    │   └── <hook-name>.ts
+    ├── providers/                      # Global React's custom hook accross the project
+    │   └── <provider-name>.ts
+    └── services/                       # SDK for external API service
+         ├── <service-name>.ts
+         └── use-<service-name>.ts      # Custom hook for managing sever state
 ```
