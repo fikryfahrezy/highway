@@ -100,10 +100,27 @@ export default function LalinPrintPage() {
       }}
     >
       <Box sx={{ mb: 2 }}>
-        <Typography variant="h6" fontWeight={600} sx={{ mb: 0.5 }}>
+        <Typography
+          variant="h6"
+          fontWeight={600}
+          sx={{
+            mb: 0.5,
+            "@media print": {
+              color: "black",
+            },
+          }}
+        >
           {title}
         </Typography>
-        <Typography color="text.secondary" sx={{ fontSize: 12 }}>
+        <Typography
+          color="text.secondary"
+          sx={{
+            fontSize: 12,
+            "@media print": {
+              color: "black",
+            },
+          }}
+        >
           Dibuat: {payload.generatedAt}
         </Typography>
       </Box>
