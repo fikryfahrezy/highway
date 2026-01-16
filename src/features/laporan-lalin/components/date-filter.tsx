@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button } from "@mui/material";
+import { Stack, Button } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { Dayjs } from "dayjs";
 
@@ -16,7 +16,7 @@ export function DateFilter({
   onFilter,
 }: DateFilterProps) {
   return (
-    <Box sx={{ mb: 3, display: "flex", gap: 2, alignItems: "center" }}>
+    <Stack direction="row" spacing={2} alignItems="center">
       <DatePicker
         label="Tanggal"
         value={selectedDate}
@@ -32,6 +32,6 @@ export function DateFilter({
       <Button variant="contained" onClick={onFilter}>
         Filter
       </Button>
-    </Box>
+    </Stack>
   );
 }

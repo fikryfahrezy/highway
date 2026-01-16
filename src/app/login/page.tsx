@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
   Box,
+  Stack,
   Button,
   TextField,
   Typography,
@@ -53,16 +54,13 @@ export default function LoginPage() {
 
   if (authLoading) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
-        }}
+      <Stack
+        justifyContent="center"
+        alignItems="center"
+        sx={{ minHeight: "100vh" }}
       >
         <CircularProgress />
-      </Box>
+      </Stack>
     );
   }
 
@@ -71,22 +69,15 @@ export default function LoginPage() {
   }
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        minHeight: "100vh",
-      }}
-    >
-      <Box
+    <Stack direction="row" sx={{ minHeight: "100vh" }}>
+      <Stack
         sx={{
           flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
           px: 4,
           bgcolor: "background.paper",
         }}
+        justifyContent="center"
+        alignItems="center"
       >
         <Box sx={{ width: "100%", maxWidth: 400 }}>
           <img
@@ -124,7 +115,7 @@ export default function LoginPage() {
                     autoComplete="username"
                     sx={{
                       "& .MuiOutlinedInput-root": {
-                        bgcolor: "grey.100",
+                        bgcolor: "var(--mui-palette-action-hover)",
                       },
                     }}
                   />
@@ -156,7 +147,7 @@ export default function LoginPage() {
                     autoComplete="current-password"
                     sx={{
                       "& .MuiOutlinedInput-root": {
-                        bgcolor: "grey.100",
+                        bgcolor: "var(--mui-palette-action-hover)",
                       },
                     }}
                   />
@@ -170,7 +161,7 @@ export default function LoginPage() {
               </Alert>
             )}
 
-            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <Stack direction="row" justifyContent="flex-end">
               <Button
                 type="submit"
                 variant="contained"
@@ -178,10 +169,10 @@ export default function LoginPage() {
               >
                 {loginMutation.isPending ? "Signing in..." : "Login"}
               </Button>
-            </Box>
+            </Stack>
           </form>
         </Box>
-      </Box>
+      </Stack>
 
       <Box
         sx={{
@@ -192,6 +183,6 @@ export default function LoginPage() {
           backgroundPosition: "center",
         }}
       />
-    </Box>
+    </Stack>
   );
 }

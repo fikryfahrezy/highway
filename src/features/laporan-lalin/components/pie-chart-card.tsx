@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Card, CardContent, Typography } from "@mui/material";
+import { Stack, Card, CardContent, Typography } from "@mui/material";
 import { PieChart } from "@mui/x-charts/PieChart";
 
 type PieDataItem = {
@@ -45,23 +45,20 @@ export function PieChartCard({
           height={height}
         />
         {showLegend && (
-          <Box sx={{ mt: 2 }}>
+          <Stack spacing={0.5} sx={{ mt: 2 }}>
             {data.map((item) => (
-              <Box
+              <Stack
                 key={item.id}
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  py: 0.5,
-                }}
+                direction="row"
+                justifyContent="space-between"
               >
                 <Typography variant="body2">{item.label}</Typography>
                 <Typography variant="body2" fontWeight={500}>
                   {item.value}%
                 </Typography>
-              </Box>
+              </Stack>
             ))}
-          </Box>
+          </Stack>
         )}
       </CardContent>
     </Card>

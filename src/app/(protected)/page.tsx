@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Box, Grid, Typography } from "@mui/material";
+import { Grid, Typography, Stack } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { useGetLalins } from "@/services/use-highway-service";
 import { useQueryParams } from "@/hooks/use-query-params";
@@ -37,8 +37,8 @@ export default function DashboardPage() {
   };
 
   return (
-    <Box>
-      <Typography variant="h5" fontWeight={500} sx={{ mb: 3 }}>
+    <Stack spacing={3}>
+      <Typography variant="h5" fontWeight={500}>
         Dashboard
       </Typography>
 
@@ -73,6 +73,6 @@ export default function DashboardPage() {
           <PieChartCard title="Total Lalin" data={ruasData} />
         </Grid>
       </Grid>
-    </Box>
+    </Stack>
   );
 }

@@ -189,7 +189,9 @@ export function LalinDataTable({
                 {Object.entries(summaryByRuas).map(([ruas, totals]) => (
                   <TableRow
                     key={`summary-${ruas}`}
-                    sx={{ bgcolor: "grey.100" }}
+                    sx={{
+                      bgcolor: "var(--mui-palette-TableCell-border)",
+                    }}
                   >
                     <TableCell
                       colSpan={7}

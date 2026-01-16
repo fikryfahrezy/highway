@@ -1,24 +1,50 @@
 "use client";
 
-import { createTheme, ThemeProvider, CssBaseline } from "@mui/material";
+import { CssBaseline } from "@mui/material";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#f59e0b",
-      dark: "#b45309",
-      light: "#fcd34d",
-      contrastText: "#ffffff",
+  cssVariables: {
+    colorSchemeSelector: "class",
+  },
+  colorSchemes: {
+    light: {
+      palette: {
+        primary: {
+          main: "#f59e0b",
+          dark: "#b45309",
+          light: "#fcd34d",
+          contrastText: "#ffffff",
+        },
+        secondary: {
+          main: "#d97706",
+          contrastText: "#ffffff",
+        },
+        background: {
+          default: "#f5f5f5",
+          paper: "#ffffff",
+        },
+      },
     },
-    secondary: {
-      main: "#d97706",
-      contrastText: "#ffffff",
-    },
-    background: {
-      default: "#f5f5f5",
-      paper: "#ffffff",
+    dark: {
+      palette: {
+        primary: {
+          main: "#f59e0b",
+          dark: "#b45309",
+          light: "#fcd34d",
+          contrastText: "#ffffff",
+        },
+        secondary: {
+          main: "#d97706",
+          contrastText: "#ffffff",
+        },
+        background: {
+          default: "#121212",
+          paper: "#1e1e1e",
+        },
+      },
     },
   },
   typography: {
@@ -44,14 +70,16 @@ const theme = createTheme({
     },
     MuiTab: {
       styleOverrides: {
-        root: {
-          textTransform: "none",
-          minWidth: "auto",
-          "&.Mui-selected": {
-            backgroundColor: "#f59e0b",
-            color: "#ffffff",
-            borderRadius: 4,
-          },
+        root: ({ theme }) => {
+          return {
+            textTransform: "none",
+            minWidth: "auto",
+            "&.Mui-selected": {
+              backgroundColor: theme.palette.primary.main,
+              color: theme.palette.primary.contrastText,
+              borderRadius: 4,
+            },
+          };
         },
       },
     },
@@ -66,23 +94,25 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           "& .MuiTableRow-root": {
-            backgroundColor: "#fafafa",
+            backgroundColor: "var(--mui-palette-TableCell-border)",
           },
         },
       },
     },
     MuiListItemButton: {
       styleOverrides: {
-        root: {
-          "&.Mui-selected": {
-            backgroundColor: "#fcd34d",
-            "&:hover": {
-              backgroundColor: "#fcd34d",
+        root: ({ theme }) => {
+          return {
+            "&.Mui-selected": {
+              backgroundColor: theme.palette.primary.light,
+              "&:hover": {
+                backgroundColor: theme.palette.primary.light,
+              },
             },
-          },
-          "&:hover": {
-            backgroundColor: "#f5f5f5",
-          },
+            "&:hover": {
+              backgroundColor: theme.palette.action.hover,
+            },
+          };
         },
       },
     },
