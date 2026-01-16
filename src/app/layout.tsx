@@ -4,6 +4,7 @@ import { AuthProvider } from "@/contexts/auth-context";
 import { TranstackProvider } from "@/providers/transtack-provider";
 import { MuiThemeProvider } from "@/providers/mui-theme-provider";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,13 +31,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <TranstackProvider>
-          <AppRouterCacheProvider>
-            <MuiThemeProvider>
-              <AuthProvider>{children}</AuthProvider>
-            </MuiThemeProvider>
-          </AppRouterCacheProvider>
-        </TranstackProvider>
+        <Suspense fallback={<>Loading...</>}>
+          <TranstackProvider>
+            <AppRouterCacheProvider>
+              <MuiThemeProvider>
+                <AuthProvider>{children}</AuthProvider>
+              </MuiThemeProvider>
+            </AppRouterCacheProvider>
+          </TranstackProvider>
+        </Suspense>
       </body>
     </html>
   );
