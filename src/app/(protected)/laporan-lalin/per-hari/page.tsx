@@ -13,6 +13,7 @@ import { LalinDataTable } from "@/features/laporan-lalin/components/lalin-data-t
 import { PaymentMethodTabs } from "@/features/laporan-lalin/components/payment-method-tabs";
 import { useLalinData } from "@/features/laporan-lalin/hooks/use-lalin-data";
 import { useLalinExport } from "@/features/laporan-lalin/hooks/use-lalin-export";
+import { useLalinSummary } from "@/features/laporan-lalin/hooks/use-lalin-summary";
 import type { PaymentMethod, LalinRow } from "@/features/laporan-lalin/types";
 
 export default function LaporanLalinPerHariPage() {
@@ -51,7 +52,7 @@ export default function LaporanLalinPerHariPage() {
     limit: 100000,
   });
 
-  const { displayRows, summaryByRuas, grandTotal } = useLalinData({
+  const { displayRows } = useLalinData({
     lalinsData,
     activeTab,
   });
@@ -69,12 +70,13 @@ export default function LaporanLalinPerHariPage() {
     [searchedRows, sortedData],
   );
 
-  // Paginate on frontend after aggregation, search, and sort
   const paginatedRows = useMemo(() => {
     const startIndex = page * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
     return sortedRows.slice(startIndex, endIndex);
   }, [sortedRows, page, rowsPerPage]);
+
+  const { summaryByRuas, grandTotal } = useLalinSummary({ paginatedRows });
 
   const handleTabChange = (newTab: PaymentMethod) => {
     setQueryParams({
@@ -128,7 +130,7 @@ export default function LaporanLalinPerHariPage() {
 
   const handleExportExcel = () => {
     exportCsv({
-      rows: sortedRows,
+      rows: paginatedRows,
       summaryByRuas,
       grandTotal,
       activeTab,
@@ -139,7 +141,7 @@ export default function LaporanLalinPerHariPage() {
 
   const handleExportPDF = () => {
     exportPdf({
-      rows: sortedRows,
+      rows: paginatedRows,
       summaryByRuas,
       grandTotal,
       activeTab,
