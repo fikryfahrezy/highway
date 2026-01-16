@@ -134,6 +134,7 @@ export function GerbangTable({
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={onRowsPerPageChange}
         rowsPerPageOptions={[5, 10, 25, 50]}
+        labelRowsPerPage="Show:"
       />
     </>
   );
