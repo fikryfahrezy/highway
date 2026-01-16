@@ -31,16 +31,12 @@ const emptySummary: RuasSummary = {
 
 export default function LalinPrintPage() {
   const searchParams = useSearchParams();
-  const key = searchParams.get("key");
+  const key = searchParams.get("key") || "";
   const [payload, setPayload] = useState<
     LalinExportPayload | null | undefined
   >();
 
   useEffect(() => {
-    if (!key) {
-      return;
-    }
-
     const stored = localStorage.getItem(key);
     const parsed = stored ? (JSON.parse(stored) as LalinExportPayload) : null;
     /* eslint-disable-next-line react-hooks/set-state-in-effect */
