@@ -46,7 +46,6 @@ export function useDashboardData({
       };
     }
 
-    // Filter lalin data based on search query before aggregation
     const lalins = lalinsData.data.rows.rows.filter((lalin) => {
       if (!searchQuery) return true;
 
@@ -71,6 +70,7 @@ export function useDashboardData({
     const ruasMap = new Map<number, number>();
 
     lalins.forEach((lalin) => {
+      paymentMethodMap.set("Tunai", (paymentMethodMap.get("Tunai") || 0) + lalin.Tunai);
       paymentMethodMap.set("BCA", (paymentMethodMap.get("BCA") || 0) + lalin.eBca);
       paymentMethodMap.set("BRI", (paymentMethodMap.get("BRI") || 0) + lalin.eBri);
       paymentMethodMap.set("BNI", (paymentMethodMap.get("BNI") || 0) + lalin.eBni);
@@ -81,46 +81,70 @@ export function useDashboardData({
       );
       paymentMethodMap.set("Mega", (paymentMethodMap.get("Mega") || 0) + lalin.eMega);
       paymentMethodMap.set("Flo", (paymentMethodMap.get("Flo") || 0) + lalin.eFlo);
+      paymentMethodMap.set("Nobu", (paymentMethodMap.get("Nobu") || 0) + lalin.eNobu);
 
-      const ktpPayment = lalin.DinasOpr + lalin.DinasMitra + lalin.DinasKary
+      const ktpPayment = lalin.DinasOpr + lalin.DinasMitra + lalin.DinasKary;
       paymentMethodMap.set("KTP", (paymentMethodMap.get("KTP") || 0) + ktpPayment);
+
+      const totalLalin =
+        lalin.Tunai +
+        lalin.DinasOpr +
+        lalin.DinasMitra +
+        lalin.DinasKary +
+        lalin.eMandiri +
+        lalin.eBri +
+        lalin.eBni +
+        lalin.eBca +
+        lalin.eNobu +
+        lalin.eDKI +
+        lalin.eMega +
+        lalin.eFlo;
 
       gerbangMap.set(
         lalin.IdGerbang,
-        (gerbangMap.get(lalin.IdGerbang) || 0) + 1,
+        (gerbangMap.get(lalin.IdGerbang) || 0) + totalLalin,
       );
 
-      shiftMap.set(lalin.Shift, (shiftMap.get(lalin.Shift) || 0) + 1);
+      shiftMap.set(lalin.Shift, (shiftMap.get(lalin.Shift) || 0) + totalLalin);
 
-      ruasMap.set(lalin.IdCabang, (ruasMap.get(lalin.IdCabang) || 0) + 1);
+      ruasMap.set(lalin.IdCabang, (ruasMap.get(lalin.IdCabang) || 0) + totalLalin);
     });
 
     const paymentMethodDataArray = Array.from(paymentMethodMap.entries()).map(
-      ([label, value]) => ({ label, value }),
+      ([label, value]) => {
+        return ({ label, value })
+      },
     );
 
     const gerbangDataArray = Array.from(gerbangMap.entries())
-      .slice(0, 5)
-      .map(([id, value]) => ({ label: `Gerbang ${id}`, value }));
+      .map(([id, value]) => {
+        return ({ label: `Gerbang ${id}`, value })
+      });
 
     const shiftTotal = Array.from(shiftMap.values()).reduce(
-      (a, b) => a + b,
-      0,
-    );
+      (a, b) => {
+        return a + b
+      }, 0,);
     const shiftDataArray = Array.from(shiftMap.entries()).map(
-      ([id, value]) => ({
-        id,
-        value: shiftTotal > 0 ? Math.round((value / shiftTotal) * 100) : 0,
-        label: `Shift ${id}`,
-      }),
+      ([id, value]) => {
+        return ({
+          id,
+          value: shiftTotal > 0 ? Math.round((value / shiftTotal) * 100) : 0,
+          label: `Shift ${id}`,
+        })
+      },
     );
 
-    const ruasTotal = Array.from(ruasMap.values()).reduce((a, b) => a + b, 0);
-    const ruasDataArray = Array.from(ruasMap.entries()).map(([id, value]) => ({
-      id,
-      value: ruasTotal > 0 ? Math.round((value / ruasTotal) * 100) : 0,
-      label: `Ruas ${id}`,
-    }));
+    const ruasTotal = Array.from(ruasMap.values()).reduce((a, b) => {
+      return a + b
+    }, 0);
+    const ruasDataArray = Array.from(ruasMap.entries()).map(([id, value]) => {
+      return ({
+        id,
+        value: ruasTotal > 0 ? Math.round((value / ruasTotal) * 100) : 0,
+        label: `Ruas ${id}`,
+      })
+    });
 
     return {
       paymentMethodData: paymentMethodDataArray,
