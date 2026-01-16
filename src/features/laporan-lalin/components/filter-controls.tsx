@@ -12,6 +12,8 @@ type FilterControlsProps = {
   onDateChange: (date: Dayjs | null) => void;
   onFilter: () => void;
   onReset: () => void;
+  searchPlaceholder?: string;
+  dateLabel?: string;
 };
 
 export function FilterControls({
@@ -21,6 +23,8 @@ export function FilterControls({
   onDateChange,
   onFilter,
   onReset,
+  searchPlaceholder = "Search",
+  dateLabel = "Dari Tanggal",
 }: FilterControlsProps) {
   return (
     <Box
@@ -33,7 +37,7 @@ export function FilterControls({
       }}
     >
       <TextField
-        placeholder="Search"
+        placeholder={searchPlaceholder}
         size="small"
         value={searchQuery}
         onChange={(event) => {
@@ -51,7 +55,7 @@ export function FilterControls({
         sx={{ minWidth: 200 }}
       />
       <DatePicker
-        label="Tanggal"
+        label={dateLabel}
         value={selectedDate}
         onChange={onDateChange}
         slotProps={{

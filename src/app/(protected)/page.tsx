@@ -6,13 +6,14 @@ import dayjs, { Dayjs } from "dayjs";
 import { useGetLalins } from "@/services/use-highway-service";
 import { useQueryParams } from "@/hooks/use-query-params";
 import { useDashboardData } from "@/features/laporan-lalin/hooks/use-dashboard-data";
-import { DateFilter } from "@/features/laporan-lalin/components/date-filter";
+import { FilterControls } from "@/features/laporan-lalin/components/filter-controls";
 import { BarChartCard } from "@/features/laporan-lalin/components/bar-chart-card";
 import { PieChartCard } from "@/features/laporan-lalin/components/pie-chart-card";
 
 export default function DashboardPage() {
   const { getQueryParam, setQueryParams } = useQueryParams();
 
+  const searchQuery = getQueryParam("search") || "";
   const dateParam = getQueryParam("date");
   const selectedDate = useMemo(() => {
     return dateParam ? dayjs(dateParam) : null;
@@ -27,7 +28,14 @@ export default function DashboardPage() {
   const { paymentMethodData, gerbangData, shiftData, ruasData } =
     useDashboardData({
       lalinsData,
+      searchQuery,
     });
+
+  const handleSearchChange = (value: string) => {
+    setQueryParams({
+      search: value,
+    });
+  };
 
   const handleDateChange = (date: Dayjs | null) => {
     setQueryParams({
@@ -39,16 +47,28 @@ export default function DashboardPage() {
     setQueryParams(params);
   };
 
+  const handleReset = () => {
+    setQueryParams({
+      search: null,
+      date: null,
+    });
+  };
+
   return (
     <Stack spacing={3}>
       <Typography variant="h5" fontWeight={500}>
         Dashboard
       </Typography>
 
-      <DateFilter
+      <FilterControls
+        searchQuery={searchQuery}
         selectedDate={selectedDate}
+        onSearchChange={handleSearchChange}
         onDateChange={handleDateChange}
         onFilter={handleFilter}
+        onReset={handleReset}
+        searchPlaceholder="Search by Ruas, Gerbang, or Gardu"
+        dateLabel="Tanggal"
       />
 
       <Grid container spacing={3}>
