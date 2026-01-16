@@ -1,12 +1,12 @@
 "use client";
 
 import {
-  Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Grid,
   TextField,
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
@@ -72,78 +72,86 @@ export function GerbangFormDialog({
       </DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
-            <Controller
-              name="id"
-              control={control}
-              render={({ field }) => {
-                return (
-                  <TextField
-                    {...field}
-                    label="ID"
-                    type="number"
-                    fullWidth
-                    error={!!errors.id}
-                    helperText={errors.id?.message}
-                    disabled={!!editingGerbang}
-                    onChange={(event) => {
-                      field.onChange(parseInt(event.target.value) || 0);
-                    }}
-                  />
-                );
-              }}
-            />
-            <Controller
-              name="IdCabang"
-              control={control}
-              render={({ field }) => {
-                return (
-                  <TextField
-                    {...field}
-                    label="ID Cabang"
-                    type="number"
-                    fullWidth
-                    error={!!errors.IdCabang}
-                    helperText={errors.IdCabang?.message}
-                    disabled={!!editingGerbang}
-                    onChange={(event) => {
-                      field.onChange(parseInt(event.target.value) || 0);
-                    }}
-                  />
-                );
-              }}
-            />
-            <Controller
-              name="NamaGerbang"
-              control={control}
-              render={({ field }) => {
-                return (
-                  <TextField
-                    {...field}
-                    label="Nama Gerbang"
-                    fullWidth
-                    error={!!errors.NamaGerbang}
-                    helperText={errors.NamaGerbang?.message}
-                  />
-                );
-              }}
-            />
-            <Controller
-              name="NamaCabang"
-              control={control}
-              render={({ field }) => {
-                return (
-                  <TextField
-                    {...field}
-                    label="Nama Cabang"
-                    fullWidth
-                    error={!!errors.NamaCabang}
-                    helperText={errors.NamaCabang?.message}
-                  />
-                );
-              }}
-            />
-          </Box>
+          <Grid container spacing={2}>
+            <Grid size={6}>
+              <Controller
+                name="id"
+                control={control}
+                render={({ field }) => {
+                  return (
+                    <TextField
+                      {...field}
+                      label="ID"
+                      type="number"
+                      fullWidth
+                      error={!!errors.id}
+                      helperText={errors.id?.message}
+                      disabled={!!editingGerbang}
+                      onChange={(event) => {
+                        field.onChange(parseInt(event.target.value) || 0);
+                      }}
+                    />
+                  );
+                }}
+              />
+            </Grid>
+            <Grid size={6}>
+              <Controller
+                name="IdCabang"
+                control={control}
+                render={({ field }) => {
+                  return (
+                    <TextField
+                      {...field}
+                      label="ID Cabang"
+                      type="number"
+                      fullWidth
+                      error={!!errors.IdCabang}
+                      helperText={errors.IdCabang?.message}
+                      disabled={!!editingGerbang}
+                      onChange={(event) => {
+                        field.onChange(parseInt(event.target.value) || 0);
+                      }}
+                    />
+                  );
+                }}
+              />
+            </Grid>
+            <Grid size={6}>
+              <Controller
+                name="NamaGerbang"
+                control={control}
+                render={({ field }) => {
+                  return (
+                    <TextField
+                      {...field}
+                      label="Nama Gerbang"
+                      fullWidth
+                      error={!!errors.NamaGerbang}
+                      helperText={errors.NamaGerbang?.message}
+                    />
+                  );
+                }}
+              />
+            </Grid>
+            <Grid size={6}>
+              <Controller
+                name="NamaCabang"
+                control={control}
+                render={({ field }) => {
+                  return (
+                    <TextField
+                      {...field}
+                      label="Nama Cabang"
+                      fullWidth
+                      error={!!errors.NamaCabang}
+                      helperText={errors.NamaCabang?.message}
+                    />
+                  );
+                }}
+              />
+            </Grid>
+          </Grid>
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose}>Cancel</Button>
