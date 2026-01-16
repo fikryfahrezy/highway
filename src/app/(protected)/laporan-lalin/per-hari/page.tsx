@@ -11,6 +11,7 @@ import { FilterControls } from "@/features/laporan-lalin/components/filter-contr
 import { LalinDataTable } from "@/features/laporan-lalin/components/lalin-data-table";
 import { PaymentMethodTabs } from "@/features/laporan-lalin/components/payment-method-tabs";
 import { useLalinData } from "@/features/laporan-lalin/hooks/use-lalin-data";
+import { useLalinExport } from "@/features/laporan-lalin/hooks/use-lalin-export";
 import type { PaymentMethod, LalinRow } from "@/features/laporan-lalin/types";
 
 export default function LaporanLalinPerHariPage() {
@@ -53,6 +54,8 @@ export default function LaporanLalinPerHariPage() {
     lalinsData,
     activeTab,
   });
+
+  const { exportCsv, exportPdf } = useLalinExport();
 
   const searchedRows = useClientSearch({
     data: aggregatedRows,
@@ -116,13 +119,25 @@ export default function LaporanLalinPerHariPage() {
   };
 
   const handleExportExcel = () => {
-    console.log("Export to Excel clicked");
-    // TODO: Implement Excel export logic
+    exportCsv({
+      rows: sortedRows,
+      summaryByRuas,
+      grandTotal,
+      activeTab,
+      selectedDate: selectedDate?.format("YYYY-MM-DD") || null,
+      generatedAt: dayjs().format("YYYY-MM-DD HH:mm"),
+    });
   };
 
   const handleExportPDF = () => {
-    console.log("Export to PDF clicked");
-    // TODO: Implement PDF export logic
+    exportPdf({
+      rows: sortedRows,
+      summaryByRuas,
+      grandTotal,
+      activeTab,
+      selectedDate: selectedDate?.format("YYYY-MM-DD") || null,
+      generatedAt: dayjs().format("YYYY-MM-DD HH:mm"),
+    });
   };
 
   return (

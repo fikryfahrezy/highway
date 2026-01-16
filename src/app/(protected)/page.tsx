@@ -33,7 +33,9 @@ export default function DashboardPage() {
   };
 
   const handleFilter = () => {
-    // TODO: Implement filter
+    setQueryParams({
+      page: 0,
+    });
   };
 
   return (
