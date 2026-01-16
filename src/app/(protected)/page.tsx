@@ -18,13 +18,16 @@ export default function DashboardPage() {
     return dateParam ? dayjs(dateParam) : null;
   }, [dateParam]);
 
-  const { data: lalinsData } = useGetLalins({
+  const params = {
     tanggal: selectedDate?.format("YYYY-MM-DD"),
-  });
+    limit: 100000,
+  };
+  const { data: lalinsData } = useGetLalins(params);
 
-  const { cabangData, gerbangData, shiftData, ruasData } = useDashboardData({
-    lalinsData,
-  });
+  const { paymentMethodData, gerbangData, shiftData, ruasData } =
+    useDashboardData({
+      lalinsData,
+    });
 
   const handleDateChange = (date: Dayjs | null) => {
     setQueryParams({
@@ -33,9 +36,7 @@ export default function DashboardPage() {
   };
 
   const handleFilter = () => {
-    setQueryParams({
-      page: 0,
-    });
+    setQueryParams(params);
   };
 
   return (
@@ -54,8 +55,8 @@ export default function DashboardPage() {
         <Grid size={{ xs: 12, lg: 8 }}>
           <BarChartCard
             title="Jumlah Lalin"
-            data={cabangData}
-            labels={["BCA", "BRI", "BNI", "DKI", "Mandiri", "Mega", "Flo"]}
+            data={paymentMethodData.map((item) => item.value)}
+            labels={paymentMethodData.map((item) => item.label)}
           />
         </Grid>
 
